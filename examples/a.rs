@@ -38,39 +38,64 @@ mod ast {
     }
 }
 
+mod hir {
+    // just placeholders
+
+    pub struct Ty;
+
+    pub struct TraitRef;
+
+    pub struct Signature;
+
+    pub struct Parameters;
+
+    pub struct Lifetime;
+}
 struct Context {}
 
 impl Context {
-    fn lower_signature(&mut self, sig: &ast::Signature) {
+    fn lower_signature(&mut self, sig: &ast::Signature) -> hir::Signature {
         for input in &sig.inputs {
             self.lower_ty(input);
         }
 
         self.lower_ty(&sig.output);
+
+        hir::Signature
     }
 
-    fn lower_trait_ref(&mut self, trait_ref: &ast::TraitRef) {
+    fn lower_trait_ref(&mut self, trait_ref: &ast::TraitRef) -> hir::TraitRef {
         match &trait_ref.parameters {
             ast::Parameters::AngleBracket(parameters) => {
-                self.lower_angle_bracket_parameters(&parameters)
+                self.lower_angle_bracket_parameters(&parameters);
             }
             ast::Parameters::Parenthesized(types) => {
                 let parameters: Vec<_> = types.iter().cloned().map(ast::Parameter::Ty).collect();
-                self.lower_angle_bracket_parameters(&parameters)
+                self.lower_angle_bracket_parameters(&parameters);
             }
         }
+
+        hir::TraitRef
     }
 
-    fn lower_angle_bracket_parameters(&mut self, parameters: &[ast::Parameter]) {
+    fn lower_angle_bracket_parameters(&mut self, parameters: &[ast::Parameter]) -> hir::Parameters {
         for p in parameters {
             match p {
-                ast::Parameter::Ty(ty) => self.lower_ty(ty),
-                ast::Parameter::Lifetime(lt) => self.lower_lifetime(lt),
+                ast::Parameter::Ty(ty) => {
+                    let hir_ty = self.lower_ty(ty);
+                    // ...
+                }
+                ast::Parameter::Lifetime(lt) => {
+                    let hir_lifetime = self.lower_lifetime(lt);
+                    // ...
+                }
             }
         }
+
+        hir::Parameters
     }
 
-    fn lower_ty(&mut self, ty: &ast::Ty) {
+    fn lower_ty(&mut self, ty: &ast::Ty) -> hir::Ty {
         match ty {
             // ... lots of stuff here
             // A type like `impl Trait`
@@ -86,10 +111,14 @@ impl Context {
                 }
             }
         }
+
+        hir::Ty
     }
 
-    fn lower_lifetime(&mut self, lt: &ast::Lifetime) {
+    fn lower_lifetime(&mut self, lt: &ast::Lifetime) -> hir::Lifetime {
         do_something_with(lt);
+
+        hir::Lifetime
     }
 }
 
