@@ -53,6 +53,9 @@ mod hir {
 }
 struct Context<'ast> {
     impl_trait_tys: Vec<&'ast ast::TraitRef>,
+
+    // Holds temporary AST nodes that we create during lowering;
+    // this can be dropped once lowering is complete.
     arena: &'ast typed_arena::Arena<Vec<ast::Parameter>>,
 }
 
